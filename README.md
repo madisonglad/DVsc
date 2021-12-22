@@ -3,13 +3,13 @@ DVsc is a computational software to detect and identify viruses from single-cell
 This tool was tested on various scRNA-seq datasets and bulk RNA-seq datasets derived from infected human tissues and cell lines. 
 DVsc was tested on a CentOS 7 cluster. 
 ## Dependency
-The following publicly available tools should be installed to run DVsc:    
-fastp   
-hisat2  
-samtools  
-python3
---()
-UMI-tools  
+The following publicly available tools should be installed to run DVsc:      
+fastp https://github.com/OpenGene/fastp  
+hisat2 http://daehwankimlab.github.io/hisat2/  
+samtools http://www.htslib.org/   
+python3 https://www.python.org/downloads/  
+--()  
+UMI-tools https://github.com/CGATOxford/UMI-tools   
 ## Create reference database
 ### host reference database
 The first step consists in creating a hisat2 index that for host reference genomes. To do so first download the human reference genomes (GRCh38) and human mitochondrion genome from http://ftp.ensembl.org/pub/release-105/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.toplevel.fa.gz and https://www.ncbi.nlm.nih.gov/nuccore/251831106.  
@@ -27,7 +27,7 @@ hisat2-build renamed_virus_reference_genomes,human_reference_genomes,human_mitoc
 For scRNA-seq data, cellular barcode identification and UMI demultiplexing need be performed before virus detection. For droplet based techniques such as 10X and drop-seq, this can be done using UMI-tools (https://github.com/CGATOxford/UMI-tools/blob/master/doc/Single_cell_tutorial.md) with two steps
 ```
 # step1
-umi_tools whitelist --stdin Read_1.fastq --bc-pattern=CCCCCCCCCCCCCCCCNNNNNNNNNN --3prime --log2stderr > whitelist.txt
+umi_tools whitelist --stdin Read_1.fastq --bc-pattern=CCCCCCCCCCCCCCCCNNNNNNNNNN --log2stderr > whitelist.txt
 # step2
 umi_tools extract --bc-pattern=CCCCCCCCCCCCCCCCNNNNNNNNNN --stdin Read_1.fastq --stdout Read_extracted.fastq.gz --read2-in Read_2.fastq --read2-out=Read_extracted.fastq.gz --whitelist=whitelist.txt
 ```
