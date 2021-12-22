@@ -8,7 +8,7 @@ fastp https://github.com/OpenGene/fastp
 hisat2 http://daehwankimlab.github.io/hisat2/  
 samtools http://www.htslib.org/   
 python3 https://www.python.org/downloads/  
---()  
+     --python dependecies: defaultdict, math, optparse, os, pandas, subprocess     
 UMI-tools https://github.com/CGATOxford/UMI-tools   
 ## Create reference database
 ### host reference database
@@ -18,7 +18,7 @@ To build hisat2 index, run
 hisat2-build human_reference_genomes,human_mitochondrion_genome homodb
 ```
 ### virus reference database
-The sencond step consists in creating a hisat2 index that include both host and virus reference genomes. To do so first download the virus genome reference sequences from http://www.virusite.org/index.php?nav=download and https://www.ncbi.nlm.nih.gov/genomes/GenomesGroup.cgi?taxid=10239. You need integrate them into one file, and rename sequence id using (.py).  
+The sencond step consists in creating a hisat2 index that include both host and virus reference genomes. To do so first download the virus genome reference sequences from http://www.virusite.org/index.php?nav=download and https://www.ncbi.nlm.nih.gov/genomes/GenomesGroup.cgi?taxid=10239. You need integrate them into one file, and note that the sequence id shoud be changed as accession id and genome length, eg ```NC_001798_154675```.
 To build hisat index, run
 ```
 hisat2-build renamed_virus_reference_genomes,human_reference_genomes,human_mitochondrion_genome virusdb
