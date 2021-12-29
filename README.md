@@ -18,7 +18,7 @@ To build hisat2 index, run
 hisat2-build human_reference_genomes,human_mitochondrion_genome homodb
 ```
 ### virus reference database
-The sencond step consists in creating a hisat2 index that include both host and virus reference genomes. To do so first download the virus genome reference sequences from http://www.virusite.org/index.php?nav=download and https://www.ncbi.nlm.nih.gov/genomes/GenomesGroup.cgi?taxid=10239. You need integrate them into one file, and note that the sequence id shoud be changed as accession id and genome length, eg ```NC_001798_154675```.
+The sencond step consists in creating a hisat2 index that include both host and virus reference genomes. To do so first download the virus genome reference sequences from http://www.virusite.org/index.php?nav=download and https://www.ncbi.nlm.nih.gov/genomes/GenomesGroup.cgi?taxid=10239. You need integrate them into one file, and note that the sequence id shoud be changed as accession id, eg ```>NC_001798```.
 To build hisat index, run
 ```
 hisat2-build renamed_virus_reference_genomes,human_reference_genomes,human_mitochondrion_genome virusdb
