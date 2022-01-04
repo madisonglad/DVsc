@@ -50,8 +50,7 @@ then
 	rm -r $id/bed
 fi
 
-#if false; then
-/media/eys/lf/admin/prog5/fastp -i $fastq -y -g -o $id/$id.clean.fastq -l $readcut -w $core -h $id/$id.html
+fastp -i $fastq -y -g -o $id/$id.clean.fastq -l $readcut -w $core -h $id/$id.html
 
 hisat2 --dta -q -x $humdb -U $id/$id.clean.fastq --sensitive -p 32 -S $id/$id.sam --un $id/$id.fastq
 
@@ -61,7 +60,6 @@ samtools view -@ $core -bS $id/$id.sam > $id/$id.bam
 samtools sort -@ $core $id/$id.bam -o $id/$id.sort.bam
 samtools index -@ $core $id/$id.sort.bam
 samtools idxstats -@ $core $id/$id.sort.bam > $id/count_ref.txt
-#fi
 
 mkdir $id/viral_bam
 mkdir $id/bed
