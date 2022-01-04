@@ -71,7 +71,6 @@ python qc.py -s $id -l $lengthcut -f $annotatefile
 python count_by_viral.py -s $id
 
 python filter.py -s $id -m $method -o $outpath
-#fi
 
 if [ $method == "scRNAseq" ]
 then
@@ -83,11 +82,11 @@ then
 	echo "done!"
 fi
 	
-#rm -r $id/tmp*
-#rm -r $id/single_count
+rm -r $id/tmp*
+rm -r $id/single_count
 
-#rm -r $id/viral_bam
+rm -r $id/viral_bam
 
-#rm $id/*.fastq
-#rm $id/*sam
-#rm $id/*bam
+rm $id/*.fastq
+rm $id/*sam
+rm $id/*bam
