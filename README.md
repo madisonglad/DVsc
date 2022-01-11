@@ -23,6 +23,7 @@ To build hisat index, run
 ```
 hisat2-build renamed_virus_reference_genomes,human_reference_genomes,human_mitochondrion_genome virusdb
 ```
+You need to create a file that list all the viruses included in the index and their genome length. We provide an example in the Github that corresponds to the dataset we use.
 ## Pre-processing for scRNA-seq data
 For scRNA-seq data, cellular barcode identification and UMI demultiplexing need be performed before virus detection. For droplet based techniques such as 10X and drop-seq, this can be done using UMI-tools (https://github.com/CGATOxford/UMI-tools/blob/master/doc/Single_cell_tutorial.md) with two steps
 ```
