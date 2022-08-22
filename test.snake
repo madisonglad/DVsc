@@ -1,0 +1,111 @@
+rule all:
+	input:
+		expand("{sample}/out/{sample}.virus_count.filter.txt", sample=config['sample']),
+		expand("{sample}/out/{sample}.gtf", sample=config['sample']),
+		expand("{sample}/out/{sample}.countbyumi.filter.txt", sample=config['sample']),
+		expand("{sample}/count_ref.txt",sample=config['sample'])
+
+
+rule fastp:
+	input:
+		inputfile = config['fastq']
+	output:
+		outputfile = '{sample}/{sample}.clean.fastq'
+	params:
+		threads = config['tools']['fastp']['threads']
+	shell:
+		"{config[tools][fastp][call]} -i {input.inputfile} -y 30 -x -g -l 20 \
+		-o {output.outputfile} -w {params.threads} -h {params.threads}/{params.threads}.html"
+
+rule alignment:
+	input:
+		inputfile = '{sample}/{sample}.clean.fastq'
+	output:
+		outputfile = '{sample}/{sample}.sam'
+	params:
+		threads = config['tools']['hisat2']['threads'],
+		humdb = config['resources']['humdb'],
+		virusdb = config['resources']['virusdb']
+	shell:
+		"{config[tools][hisat2][call]} --dta -q -x {params.humdb} -U {input.inputfile} --sensitive \
+		-p {params.threads} -S {wildcards.sample}/{wildcards.sample}.tmp.sam --un {wildcards.sample}/{wildcards.sample}.fastq && \
+		{config[tools][hisat2][call]} --dta -q -x {params.virusdb} -U {wildcards.sample}/{wildcards.sample}.fastq \
+		--bowtie2-dp 1 -k 10 --score-min L,0,-0.4 -P {params.threads} -S {output.outputfile}"
+		
+rule bamdeal:
+	input:
+		inputfile = '{sample}/{sample}.sam'
+	output:
+		outputfile = '{sample}/count_ref.txt'
+	params:
+		threads = config['tools']['samtools']['threads']
+	shell:
+		"{config[tools][samtools][call]} view -@ {params.threads} -bS {input.inputfile} > {wildcards.sample}/{wildcards.sample}.bam && \
+		{config[tools][samtools][call]} sort -@ {params.threads} {wildcards.sample}/{wildcards.sample}.bam -o {wildcards.sample}/{wildcards.sample}.sort.bam && \
+		{config[tools][samtools][call]} index -@ {params.threads} {wildcards.sample}/{wildcards.sample}.sort.bam && \
+		{config[tools][samtools][call]} idxstats -@ {params.threads} {wildcards.sample}/{wildcards.sample}.sort.bam > {wildcards.sample}/count_ref.txt" 
+
+rule qc:
+	input:
+		annotatefile = config['resources']['annotatedfile']
+	output:
+		annotatedfile = '{sample}/{sample}.anno3.txt',
+		nclistfile = '{sample}/{sample}.nclist.txt'
+
+	shell:
+		"python src/qc.py -s '{wildcards.sample}' -f {input.annotatefile} -a {output.annotatedfile} \
+		-n {output.nclistfile}"
+		
+		
+rule filter1:
+	input:
+		annotatefile = config['resources']['annotatedfile'],
+		nclistfile = '{sample}/{sample}.nclist.txt',
+	output:
+		nclistfilterfile = '{sample}/{sample}.nclist.filter.txt',
+		annotatedfilterfile = '{sample}/{sample}.filter.anno.txt'
+	params:
+		readlength = config['readlength']		
+	shell:
+		"python src/filter1.py -s '{wildcards.sample}' -r {params.readlength} -f {input.annotatefile} \
+		-n {input.nclistfile} -c {output.nclistfilterfile} -a {output.annotatedfilterfile} "
+		
+rule count_by_viral:
+	input:
+		annotatedfilterfile = '{sample}/{sample}.filter.anno.txt'
+	output:
+		viruscountfile = '{sample}/{sample}.virus_count.txt'
+	shell:
+		"python src/count_by_viral.py -s '{wildcards.sample}' -a {input.annotatedfilterfile} -v {output.viruscountfile}"
+
+rule filter2:
+	input:
+		viruscountfile = '{sample}/{sample}.virus_count.txt'
+	output:
+		viruscountfilterfile = '{sample}/out/{sample}.virus_count.filter.txt'
+	params:
+		method = config['method']
+	shell:
+		"python src/filter2.py -m {params.method} -i {input.viruscountfile} -o {output.viruscountfilterfile}"
+		
+rule assemble:
+	input:
+		annotatedfilterfile = '{sample}/{sample}.filter.anno.txt',
+		viruscountfilterfile = '{sample}/out/{sample}.virus_count.filter.txt'
+	output:
+		assemblefile = '{sample}/out/{sample}.gtf'
+	shell:
+		"python src/assemble.py -s '{wildcards.sample}' -a {input.annotatedfilterfile} \
+		-v {input.viruscountfilterfile} -o {output.assemblefile}"
+		
+rule count_by_umi:
+	input:
+		annotatedfilterfile = '{sample}/{sample}.filter.anno.txt',
+		viruscountfilterfile = '{sample}/out/{sample}.virus_count.filter.txt'
+	output:
+		umifilterfile = '{sample}/out/{sample}.countbyumi.filter.txt'
+	params:
+		method = config['method']
+	shell:
+		"python src/count_by_umi.py -s '{wildcards.sample}' -a {input.annotatedfilterfile} \
+		-v {input.viruscountfilterfile} -o {output.umifilterfile} -m {params.method}"
