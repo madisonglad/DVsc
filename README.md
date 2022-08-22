@@ -3,14 +3,14 @@ DVsc is a computational software to detect and identify viruses from single-cell
 This tool was tested on various scRNA-seq datasets and bulk RNA-seq datasets derived from infected human tissues and cell lines. 
 DVsc was tested on a CentOS 7 cluster. 
 ## Dependency
-The following publicly available tools should be installed to run DVsc: 
+The following publicly available tools should be installed to run DVsc:  
 fastp https://github.com/OpenGene/fastp  
 hisat2 http://daehwankimlab.github.io/hisat2/  
-samtools http://www.htslib.org/   
+samtools http://www.htslib.org/  
 python3 https://www.python.org/downloads/  
      --python dependecies: defaultdict, math, optparse, os, pandas, subprocess  
-snakemake https://snakemake.github.io 
-stringtie https://github.com/gpertea/stringtie 
+snakemake https://snakemake.github.io  
+stringtie https://github.com/gpertea/stringtie  
 UMI-tools https://github.com/CGATOxford/UMI-tools   
 ## Create reference database
 ### host reference database
