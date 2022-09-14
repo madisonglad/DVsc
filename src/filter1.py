@@ -49,7 +49,7 @@ def filter(nclistoutfile, nclistfilteroutfile, readlength):
                 if float(maxstr) < 50:
                     filter = 'N'
                     
-            if float(readlength) > 75:
+            if float(readlength) >= 75:
                 if float(maxstr) < 165.925:
                     filter = 'N'
                         
