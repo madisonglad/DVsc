@@ -32,8 +32,7 @@ rule alignment_hisat2:
 		"{config[tools][hisat2][call]} --dta -q -x {params.humdb} -U {input.inputfile} --sensitive \
 		-p {params.threads} -S {wildcards.sample}/{wildcards.sample}.tmp.sam --un {wildcards.sample}/{wildcards.sample}.fastq && \
 		{config[tools][hisat2][call]} --dta -q -x {params.virusdb} -U {wildcards.sample}/{wildcards.sample}.fastq \
-		--bowtie2-dp 1 -k 10 --score-min L,0,-0.4 -P {params.threads} -S {output.outputfile}"
-		
+		--bowtie2-dp 1 -k 10 --score-min L,0,-0.4 -P {params.threads} -S {output.outputfile}"		
 rule alignment_star:
 	input:
 		inputfile = '{sample}/{sample}.clean.fastq'
@@ -90,6 +89,15 @@ rule filter1:
 		"python src/filter1.py -s '{wildcards.sample}' -r {params.readlength} -f {input.annotatefile} \
 		-n {input.nclistfile} -c {output.nclistfilterfile} -a {output.annotatedfilterfile} "
 
+# reads statistic based on each viral
+rule count_by_viral:
+	input:
+		annotatedfilterfile = '{sample}/{sample}.filter.anno.txt'
+	output:
+		viruscountfile = '{sample}/{sample}.virus_count.txt'
+	shell:
+		"python src/count_by_viral.py -s '{wildcards.sample}' -a {input.annotatedfilterfile} -v {output.viruscountfile}"
+
 # the second step for qc filtering of detected viral reads		
 rule filter2:
 	input:
@@ -100,16 +108,7 @@ rule filter2:
 		method = config['method']
 	shell:
 		"python src/filter2.py -m {params.method} -i {input.viruscountfile} -o {output.viruscountfilterfile}"
-		
-# reads statistic based on each viral
-rule count_by_viral:
-	input:
-		annotatedfilterfile = '{sample}/{sample}.filter.anno.txt'
-	output:
-		viruscountfile = '{sample}/{sample}.virus_count.txt'
-	shell:
-		"python src/count_by_viral.py -s '{wildcards.sample}' -a {input.annotatedfilterfile} -v {output.viruscountfile}"
-		
+				
 # transcriptome asssembly for dectected virus
 rule assemble:
 	input:
