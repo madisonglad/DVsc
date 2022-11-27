@@ -1,3 +1,4 @@
+# workflow for virus detecting in scRNAseq/bulkRNAseq
 rule all:
 	input:
 		expand("{sample}/out/{sample}.virus_count.filter.txt", sample=config['sample']),
@@ -5,7 +6,7 @@ rule all:
 		expand("{sample}/out/{sample}.countbyumi.filter.txt", sample=config['sample']),
 		expand("{sample}/count_ref.txt",sample=config['sample'])
 
-
+# quality-trimmed for raw fastq data
 rule fastp:
 	input:
 		inputfile = config['fastq']
@@ -17,6 +18,7 @@ rule fastp:
 		"{config[tools][fastp][call]} -i {input.inputfile} -y 30 -x -g -l 20 \
 		-o {output.outputfile} -w {params.threads} -h {params.threads}/{params.threads}.html"
 
+# sequence aligment with human and viral reference database
 rule alignment_hisat2:
 	input:
 		inputfile = '{sample}/{sample}.clean.fastq'
