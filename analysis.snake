@@ -50,6 +50,7 @@ rule alignment_star:
 		STAR --runThreadN {params.threads} --genomeDir {params.virusdb} --readFilesIn {wildcards.sample}/{wildcards.sample}.fastq && \
 		mv {params.tmpfile} {output.outputfile}"
 
+# processing of bam file for furture analysis
 rule bamdeal:
 	input:
 		inputfile = "{sample}/{sample}.config['alignment'].sam"
@@ -63,6 +64,7 @@ rule bamdeal:
 		{config[tools][samtools][call]} index -@ {params.threads} {wildcards.sample}/{wildcards.sample}.sort.bam && \
 		{config[tools][samtools][call]} idxstats -@ {params.threads} {wildcards.sample}/{wildcards.sample}.sort.bam > {wildcards.sample}/count_ref.txt" 
 
+# calculate qc features of viral reads for virus filtering
 rule qc:
 	input:
 		annotatefile = config['resources']['annotatedfile']
@@ -74,7 +76,7 @@ rule qc:
 		"python src/qc.py -s '{wildcards.sample}' -f {input.annotatefile} -a {output.annotatedfile} \
 		-n {output.nclistfile}"
 		
-		
+# the fisrt step for qc filtering of detected viral reads				
 rule filter1:
 	input:
 		annotatefile = config['resources']['annotatedfile'],
@@ -95,7 +97,8 @@ rule count_by_viral:
 		viruscountfile = '{sample}/{sample}.virus_count.txt'
 	shell:
 		"python src/count_by_viral.py -s '{wildcards.sample}' -a {input.annotatedfilterfile} -v {output.viruscountfile}"
-
+		
+# the second step for qc filtering of detected viral reads		
 rule filter2:
 	input:
 		viruscountfile = '{sample}/{sample}.virus_count.txt'
