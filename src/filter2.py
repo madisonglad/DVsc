@@ -40,12 +40,8 @@ def qc(viruscountfile, n, totalnum, method, viruscountfilterfile):
                     filter = 'Y'
                     
             if method == 'bulkRNAseq':
-                if totalnum > 100000:
-                    if content > 0.05:
-                        filter = 'Y'
-                else:
-                    if content > 0.20:
-                        filter = 'Y'
+                if totalnum >= 2981 or content >= 0.6:
+                    filter = 'Y'
                         
             if filter == 'N':
                     continue
