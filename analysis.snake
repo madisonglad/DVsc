@@ -89,7 +89,8 @@ rule filter1:
 	shell:
 		"python src/filter1.py -s '{wildcards.sample}' -r {params.readlength} -f {input.annotatefile} \
 		-n {input.nclistfile} -c {output.nclistfilterfile} -a {output.annotatedfilterfile} "
-		
+
+# reads statistic based on each viral
 rule count_by_viral:
 	input:
 		annotatedfilterfile = '{sample}/{sample}.filter.anno.txt'
@@ -109,6 +110,7 @@ rule filter2:
 	shell:
 		"python src/filter2.py -m {params.method} -i {input.viruscountfile} -o {output.viruscountfilterfile}"
 		
+# transcriptome asssembly for dectected virus
 rule assemble:
 	input:
 		annotatedfilterfile = '{sample}/{sample}.filter.anno.txt',
@@ -119,6 +121,7 @@ rule assemble:
 		"python src/assemble.py -s '{wildcards.sample}' -a {input.annotatedfilterfile} \
 		-v {input.viruscountfilterfile} -o {output.assemblefile}"
 		
+# reads statistic based on each umi
 rule count_by_umi:
 	input:
 		annotatedfilterfile = '{sample}/{sample}.filter.anno.txt',
