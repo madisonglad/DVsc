@@ -17,11 +17,11 @@ rule fastp:
 		"{config[tools][fastp][call]} -i {input.inputfile} -y 30 -x -g -l 20 \
 		-o {output.outputfile} -w {params.threads} -h {params.threads}/{params.threads}.html"
 
-rule alignment:
+rule alignment_hisat2:
 	input:
 		inputfile = '{sample}/{sample}.clean.fastq'
 	output:
-		outputfile = '{sample}/{sample}.sam'
+		outputfile = '{sample}/{sample}.hisat2.sam'
 	params:
 		threads = config['tools']['hisat2']['threads'],
 		humdb = config['resources']['humdb'],
@@ -32,9 +32,25 @@ rule alignment:
 		{config[tools][hisat2][call]} --dta -q -x {params.virusdb} -U {wildcards.sample}/{wildcards.sample}.fastq \
 		--bowtie2-dp 1 -k 10 --score-min L,0,-0.4 -P {params.threads} -S {output.outputfile}"
 		
+rule alignment_star:
+	input:
+		inputfile = '{sample}/{sample}.clean.fastq'
+	output:
+		outputfile = '{sample}/{sample}.star.sam'
+	params:
+		tmpfile = 'Aligned.out.sam',
+		threads = config['tools']['hisat2']['threads'],
+		humdb = config['resources']['humdb'],
+		virusdb = config['resources']['virusdb_star']
+	shell:
+		"{config[tools][hisat2][call]} --dta -q -x {params.humdb} -U {input.inputfile} --sensitive \
+		-p {params.threads} -S {wildcards.sample}/{wildcards.sample}.tmp.sam --un {wildcards.sample}/{wildcards.sample}.fastq && \
+		STAR --runThreadN {params.threads} --genomeDir {params.virusdb} --readFilesIn {wildcards.sample}/{wildcards.sample}.fastq && \
+		mv {params.tmpfile} {output.outputfile}"
+
 rule bamdeal:
 	input:
-		inputfile = '{sample}/{sample}.sam'
+		inputfile = "{sample}/{sample}.config['alignment'].sam"
 	output:
 		outputfile = '{sample}/count_ref.txt'
 	params:
