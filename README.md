@@ -6,6 +6,7 @@ DVsc was tested on a CentOS 7 cluster.
 The following publicly available tools should be installed to run DVsc:  
 fastp https://github.com/OpenGene/fastp  
 hisat2 http://daehwankimlab.github.io/hisat2/  
+star https://github.com/alexdobin/STAR/  
 samtools http://www.htslib.org/  
 python3 https://www.python.org/downloads/  
      --python dependecies: defaultdict, math, optparse, os, pandas, subprocess  
