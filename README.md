@@ -38,6 +38,6 @@ umi_tools extract --bc-pattern=CCCCCCCCCCCCCCCCNNNNNNNNNN --stdin Read_1.fastq -
 ## Virus detection
 Before run the DVsc for virus detection, you need prepare a config file, which contain all parameters. An exemple config file is provided in the Github. Then you can start the analysis by:
 ```
-snakemake -s test.snake --configfile test.config --cores all
+snakemake -s analysis.snake --configfile test.config --cores all
 ```
 
